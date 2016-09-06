@@ -1,0 +1,2 @@
+﻿$f = $PSVersionTable.PSVersion
+$f

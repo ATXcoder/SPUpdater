@@ -1,0 +1,16 @@
+﻿{
+  "SharePoint 2013 Updates":[{
+      "Title": "August 2016 CU",
+      "KB Article": {
+        "SharePoint Foundation 2013": "https://support.microsoft.com/en-us/kb/3115447",
+        "SharePoint Server 2013": "https://support.microsoft.com/en-us/kb/3115450",
+        "Project Server 2013": "https://support.microsoft.com/en-us/kb/3115448"
+      },
+      "Update":{
+        "SharePoint Foundation 2013": "https://www.microsoft.com/en-us/download/details.aspx?id=53388",
+        "SharePoint Server 2013": "https://www.microsoft.com/en-us/download/details.aspx?id=53403",
+        "Project Server 2013": "https://www.microsoft.com/en-us/download/confirmation.aspx?id=53396&6B49FDFB-8E5B-4B07-BC31-15695C5A2143=1"
+      }
+    }
+  ]
+}
