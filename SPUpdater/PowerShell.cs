@@ -8,14 +8,16 @@ using System.Management.Automation;
 using PWS = System.Management.Automation.PowerShell;
 using System.Management.Automation.Runspaces;
 using System.Collections.ObjectModel;
-
+using log4net;
 
 namespace SPUpdater
 {
     class PowerShell
     {
+        ILog log = LogManager.GetLogger(typeof(PowerShell));
         public bool PowershellExists()
         {
+            log.Info("Checking for the exsistence of Powershell");
             string regval = Microsoft.Win32.Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PowerShell\1", "Install", null).ToString();
             if (regval.Equals("1"))
                 return true;
@@ -25,6 +27,7 @@ namespace SPUpdater
 
         public string GetPowershellVersion()
         {
+            log.Info("Checking to see what version of Powershell is installed");
             string version = String.Empty;
             using (PWS ps = PWS.Create())
             {
@@ -34,6 +37,7 @@ namespace SPUpdater
                 foreach (PSObject item in ps.Invoke())
                 {
                     version = item.Members["Major"].Value + "." + item.Members["Minor"].Value;
+                    log.Info("Powershell version: " + version);
                 }
             }
             return version;
@@ -64,12 +68,17 @@ namespace SPUpdater
 
         public void UpdateExecutionPolicy()
         {
+            log.Info("Attempting to update Powershell Execution policy");
             using (System.Management.Automation.PowerShell PowerShellInstance = System.Management.Automation.PowerShell.Create())
             {
                 string script = "Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted; Get-ExecutionPolicy"; // the second command to know the ExecutionPolicy level
                 PowerShellInstance.AddScript(script);
                 var someResult = PowerShellInstance.Invoke();
-                PSObject tess = someResult[0];
+                PSObject test = someResult[0];
+                if (test.Members["ToString"].Value.ToString() != null)
+                {
+                    log.Info("Powershell execution policy set to '" + test.Members["ToString"].Value.ToString());
+                }
             }
         }
     }
