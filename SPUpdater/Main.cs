@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,6 +14,8 @@ namespace SPUpdater
 {
     public partial class Main : Form
     {
+        // Configure logger
+        ILog log = LogManager.GetLogger(typeof(Main));
 
         DataTable dt;
         DataView dv;
@@ -83,7 +86,9 @@ namespace SPUpdater
                     default:
                         break;
                 }
-                dv.RowFilter = "Product = '" + product + "' AND [Patch Type] = '" + patch + "'";
+                string filterQuery = "Product = '" + product + "' AND [Patch Type] = '" + patch + "'";
+                log.Info("Filtering current data: " + filterQuery);
+                dv.RowFilter = filterQuery;
                 GView_spupdates.DataSource = dv;
                 GView_spupdates.Refresh();
             }
@@ -92,6 +97,7 @@ namespace SPUpdater
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
+            log.Info("Downloading updated information from https://sharepointupdates.com");
             Update update = new SPUpdater.Update();
             DataTable data = new DataTable();
             data = update.CheckForUpdates();
@@ -101,6 +107,7 @@ namespace SPUpdater
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            log.Info("Updated information downloaded");
             panel1.Visible = false;
 
             dt = (DataTable)e.Result;
