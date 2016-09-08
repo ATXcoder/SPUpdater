@@ -33,12 +33,22 @@ namespace SPUpdater
             {
                 
                 ps.AddScript("./Scripts/PowerShell/PSVersion.ps1");
-
-                foreach (PSObject item in ps.Invoke())
+                if (ps.Streams.Error.Count > 0)
                 {
-                    version = item.Members["Major"].Value + "." + item.Members["Minor"].Value;
-                    log.Info("Powershell version: " + version);
+                    foreach (var item in ps.Streams.Error)
+                    {
+                        log.Error(item.ErrorDetails.Message.ToString());
+                        version = "ERROR";
+                    }
                 }
+                else
+                {
+                    foreach (PSObject item in ps.Invoke())
+                    {
+                        version = item.Members["Major"].Value + "." + item.Members["Minor"].Value;
+                        log.Info("Powershell version: " + version);
+                    }
+                }                
             }
             return version;
         }
@@ -66,19 +76,22 @@ namespace SPUpdater
             return obj;
         }
 
-        public void UpdateExecutionPolicy()
+        public void UpdateExecutionPolicy(Microsoft.PowerShell.ExecutionPolicy policy)
         {
             log.Info("Attempting to update Powershell Execution policy");
-            using (System.Management.Automation.PowerShell PowerShellInstance = System.Management.Automation.PowerShell.Create())
+            using (PWS ps = PWS.Create())
             {
-                string script = "Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted; Get-ExecutionPolicy"; // the second command to know the ExecutionPolicy level
-                PowerShellInstance.AddScript(script);
-                var someResult = PowerShellInstance.Invoke();
-                PSObject test = someResult[0];
-                if (test.Members["ToString"].Value.ToString() != null)
+                ps.AddScript("Set-Executionpolicy -Scope CurrentUser -ExecutionPolicy " + policy.ToString());
+                
+                //ps.AddScript("./Scripts/PowerShell/UpdateExecutionPolicy.ps1 -policy " + policy.ToString());
+                var result = ps.Invoke();
+                if (ps.Streams.Error.Count > 0)
                 {
-                    log.Info("Powershell execution policy set to '" + test.Members["ToString"].Value.ToString());
+                    log.Error(ps.Streams.Error[0].ErrorDetails.Message);
                 }
+               
+                //log.Info("Current Powershell execution policy changed from '" + result[0].Members["CurrentPolicy"].Value.ToString() + "' to '"+ result[0].Members["NewPolicy"].Value.ToString()+"'");
+                
             }
         }
     }

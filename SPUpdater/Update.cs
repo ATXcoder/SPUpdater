@@ -12,6 +12,11 @@ using RestSharp;
 using RestSharp.Deserializers;
 using System.Data;
 using System.ComponentModel;
+using System.Net;
+using log4net;
+using System.Windows.Forms;
+using System.Text.RegularExpressions;
+
 
 namespace SPUpdater
 {
@@ -63,8 +68,11 @@ namespace SPUpdater
         }
     }
 
-    class Update
+    public class Update
     {
+        // Configure logger
+        ILog log = LogManager.GetLogger(typeof(Update));
+
         public DataTable CheckForUpdates()
         {
             string baseURL = "https://sharepointupdates.com/api/";
@@ -115,10 +123,71 @@ namespace SPUpdater
             return dt;    
         }
 
-        public void DownloadUpdates()
+        public void DownloadUpdates(string kbnumber, string downloadPath)
         {
+            // Create a folder for the download
+            string dlFolder = "./Updates/" + kbnumber;
+            System.IO.Directory.CreateDirectory(dlFolder);
+
+            string baseURL = "https://sharepointupdates.com/api/";
+
+            var client = new RestClient(baseURL);
+
+            var request = new RestRequest();
+            request.Resource = "articles/" + kbnumber;
+            request.Method = Method.GET;
+            request.RequestFormat = DataFormat.Json;
+
             
+            IRestResponse<SharePointUpdates.ArticleDetail> response = client.Execute<SharePointUpdates.ArticleDetail>(request);
+            JsonDeserializer deserial = new JsonDeserializer();
+            List<SharePointUpdates.ArticleDetail> content = deserial.Deserialize<List<SharePointUpdates.ArticleDetail>>(response);
+
+            List<string> patches = new List<string>();
+ 
+            if (content[0].PatchUrl1 != null)
+            {
+                patches.Add(content[0].PatchUrl1);
+            }
+
+            if (content[0].PatchUrl2 != null)
+            {
+                patches.Add(content[0].PatchUrl2);
+            }
+
+            if (content[0].PatchUrl3 != null)
+            {
+                patches.Add(content[0].PatchUrl3);
+            }
+
+            // Download file into Directory
+
+            Dictionary<string, string> DownloadList = new Dictionary<string, string>();
+
+            foreach (var item in patches)
+            {
+                try
+                {
+                    log.Info("Downloading update from " + item);
+                    DownloadInfo downloadinfo = new DownloadInfo();
+                    downloadinfo.Download(item, dlFolder);
+                    downloadinfo.Show();
+                    downloadinfo.KBNUMBER = kbnumber;
+                    downloadinfo.FormClosed += downloadinfo_FormClosed;
+
+                } catch(Exception ex)
+                {
+                    log.Error(ex.ToString());
+                }
+            }
+           
         }
+
+        void downloadinfo_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public void InstallUpdate(SPUpdate update)
         {

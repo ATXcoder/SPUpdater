@@ -35,7 +35,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.DROP_Patch = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.CKBOX_DownloadOnly = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -44,6 +44,7 @@
             this.Menu_Help = new System.Windows.Forms.ToolStripDropDownButton();
             this.Menu_Help_About = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_Help_SysInfo = new System.Windows.Forms.ToolStripMenuItem();
+            this.BTN_Download = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.GView_spupdates)).BeginInit();
             this.panel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -53,23 +54,25 @@
             // 
             this.GView_spupdates.AllowUserToAddRows = false;
             this.GView_spupdates.AllowUserToDeleteRows = false;
+            this.GView_spupdates.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.GView_spupdates.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.GView_spupdates.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.GView_spupdates.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.GView_spupdates.Location = new System.Drawing.Point(219, 33);
+            this.GView_spupdates.Location = new System.Drawing.Point(390, 33);
             this.GView_spupdates.Name = "GView_spupdates";
             this.GView_spupdates.ReadOnly = true;
-            this.GView_spupdates.Size = new System.Drawing.Size(736, 358);
+            this.GView_spupdates.Size = new System.Drawing.Size(716, 385);
             this.GView_spupdates.TabIndex = 0;
             // 
             // BTN_Search
             // 
             this.BTN_Search.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.BTN_Search.Location = new System.Drawing.Point(12, 262);
+            this.BTN_Search.Location = new System.Drawing.Point(12, 154);
             this.BTN_Search.Name = "BTN_Search";
             this.BTN_Search.Size = new System.Drawing.Size(172, 36);
             this.BTN_Search.TabIndex = 1;
-            this.BTN_Search.Text = "Search";
+            this.BTN_Search.Text = "Filter";
             this.BTN_Search.UseVisualStyleBackColor = false;
             this.BTN_Search.Click += new System.EventHandler(this.BTN_Search_Click);
             // 
@@ -107,7 +110,7 @@
             "Non-Securirty Hotfix (HF)",
             "Service Pack (SP)",
             "Release to Manufacturing (RM)"});
-            this.DROP_Patch.Location = new System.Drawing.Point(12, 143);
+            this.DROP_Patch.Location = new System.Drawing.Point(12, 117);
             this.DROP_Patch.Name = "DROP_Patch";
             this.DROP_Patch.Size = new System.Drawing.Size(172, 21);
             this.DROP_Patch.TabIndex = 4;
@@ -115,21 +118,22 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 127);
+            this.label2.Location = new System.Drawing.Point(12, 101);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(62, 13);
             this.label2.TabIndex = 5;
             this.label2.Text = "Patch Type";
             // 
-            // checkBox1
+            // CKBOX_DownloadOnly
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(15, 209);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(98, 17);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "Download Only";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.CKBOX_DownloadOnly.AutoSize = true;
+            this.CKBOX_DownloadOnly.Location = new System.Drawing.Point(390, 491);
+            this.CKBOX_DownloadOnly.Name = "CKBOX_DownloadOnly";
+            this.CKBOX_DownloadOnly.Size = new System.Drawing.Size(98, 17);
+            this.CKBOX_DownloadOnly.TabIndex = 6;
+            this.CKBOX_DownloadOnly.Text = "Download Only";
+            this.CKBOX_DownloadOnly.UseVisualStyleBackColor = true;
+            this.CKBOX_DownloadOnly.CheckedChanged += new System.EventHandler(this.CKBOX_DownloadOnly_CheckedChanged);
             // 
             // backgroundWorker1
             // 
@@ -141,7 +145,7 @@
             this.panel1.BackColor = System.Drawing.Color.SkyBlue;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Controls.Add(this.label3);
-            this.panel1.Location = new System.Drawing.Point(433, 127);
+            this.panel1.Location = new System.Drawing.Point(591, 154);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(390, 133);
             this.panel1.TabIndex = 7;
@@ -163,7 +167,7 @@
             this.Menu_Help});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(967, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1118, 25);
             this.toolStrip1.TabIndex = 8;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -190,14 +194,26 @@
             this.Menu_Help_SysInfo.Text = "System Information";
             this.Menu_Help_SysInfo.Click += new System.EventHandler(this.Menu_Help_SysInfo_Click);
             // 
+            // BTN_Download
+            // 
+            this.BTN_Download.BackColor = System.Drawing.Color.LightGreen;
+            this.BTN_Download.Location = new System.Drawing.Point(390, 443);
+            this.BTN_Download.Name = "BTN_Download";
+            this.BTN_Download.Size = new System.Drawing.Size(158, 42);
+            this.BTN_Download.TabIndex = 9;
+            this.BTN_Download.Text = "Download and Install";
+            this.BTN_Download.UseVisualStyleBackColor = false;
+            this.BTN_Download.Click += new System.EventHandler(this.BTN_Download_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(967, 498);
+            this.ClientSize = new System.Drawing.Size(1118, 520);
+            this.Controls.Add(this.BTN_Download);
+            this.Controls.Add(this.CKBOX_DownloadOnly);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.DROP_Patch);
             this.Controls.Add(this.label1);
@@ -225,7 +241,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox DROP_Patch;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox CKBOX_DownloadOnly;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Panel panel1;
@@ -234,6 +250,7 @@
         private System.Windows.Forms.ToolStripDropDownButton Menu_Help;
         private System.Windows.Forms.ToolStripMenuItem Menu_Help_About;
         private System.Windows.Forms.ToolStripMenuItem Menu_Help_SysInfo;
+        private System.Windows.Forms.Button BTN_Download;
     }
 }
 

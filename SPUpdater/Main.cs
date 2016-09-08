@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,15 +34,43 @@ namespace SPUpdater
 
             //Update update = new SPUpdater.Update();
             ////update.CheckForUpdates("SharePoint Server 2013", "CU");
-
+            log.Info(System.Environment.NewLine +
+                     "########################################" + System.Environment.NewLine +
+                     "# SharePoint 2013 Updater              #" + System.Environment.NewLine +
+                     "# By: Thomas Sloan                     #" + System.Environment.NewLine +
+                     "########################################" + System.Environment.NewLine);
             PowerShell ps = new PowerShell();
-
-            MessageBox.Show(ps.GetPowershellVersion());
+            ps.UpdateExecutionPolicy(Microsoft.PowerShell.ExecutionPolicy.Unrestricted);
+            ps.GetPowershellVersion();
 
             // Start the BackgroundWorker.
             panel1.Visible = true;
-            //backgroundWorker1.RunWorkerAsync();
+            backgroundWorker1.RunWorkerAsync();
         }
+
+        #region Download Updates Information
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            log.Info("Downloading updated information from https://sharepointupdates.com");
+            Update update = new SPUpdater.Update();
+            DataTable data = new DataTable();
+            data = update.CheckForUpdates();
+
+            e.Result = data;
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            log.Info("Updated information downloaded");
+            panel1.Visible = false;
+
+            dt = (DataTable)e.Result;
+            dt.DefaultView.Sort = "Product";
+
+            dv = dt.DefaultView;
+            GView_spupdates.DataSource = dv;
+        }
+        #endregion
 
         private void BTN_Search_Click(object sender, EventArgs e)
         {
@@ -95,32 +124,50 @@ namespace SPUpdater
 
         }
 
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-        {
-            log.Info("Downloading updated information from https://sharepointupdates.com");
-            Update update = new SPUpdater.Update();
-            DataTable data = new DataTable();
-            data = update.CheckForUpdates();
-            
-            e.Result = data;
-        }
-
-        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            log.Info("Updated information downloaded");
-            panel1.Visible = false;
-
-            dt = (DataTable)e.Result;
-            dt.DefaultView.Sort = "Product";
-
-            dv = dt.DefaultView;
-            GView_spupdates.DataSource = dv;
-        }
+       
 
         private void Menu_Help_SysInfo_Click(object sender, EventArgs e)
         {
             SysInfo sysinfo = new SysInfo();
             sysinfo.Show();
+        }
+
+        private void CKBOX_DownloadOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!CKBOX_DownloadOnly.Checked)
+            {
+                BTN_Download.Text = "Download and Install";
+                log.Info("Download settings set to: DOWNLOAD AND INSTALL");
+                BTN_Download.Refresh();
+            }
+            else
+            {
+                BTN_Download.Text = "Download Only";
+                log.Info("Download settings set to: DOWNLOAD ONLY");
+                BTN_Download.Refresh();
+            }
+        }
+
+        private void BTN_Download_Click(object sender, EventArgs e)
+        {
+            if (BTN_Download.Text == "Download Only")
+            {
+                //Just going to download the updates
+                foreach (DataGridViewRow item in GView_spupdates.SelectedRows)
+                {
+                    string product = item.Cells[0].Value.ToString();
+                    string title = item.Cells[1].Value.ToString();
+                    string kbnumber = item.Cells[3].Value.ToString();
+                    log.Info("Begining download for: " + product + "(" + kbnumber + ") - " + title);
+
+                    Update update = new Update();
+                    update.DownloadUpdates(kbnumber, "./Updates/" + kbnumber);
+                }
+            }
+            else
+            {
+
+            }
         }
     }
 }
