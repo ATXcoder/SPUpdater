@@ -70,6 +70,14 @@ namespace SPUpdater
 
     public class Update
     {
+        static Dictionary<string, string> DownloadList = new Dictionary<string, string>();
+        static DataTable DownloadTable = new DataTable();
+
+
+
+        public enum UpdateStatus{
+            Queued, Pending, Downloading, Complete, Error
+        }
         // Configure logger
         ILog log = LogManager.GetLogger(typeof(Update));
 
@@ -160,21 +168,19 @@ namespace SPUpdater
                 patches.Add(content[0].PatchUrl3);
             }
 
-            // Download file into Directory
-
-            Dictionary<string, string> DownloadList = new Dictionary<string, string>();
 
             foreach (var item in patches)
             {
                 try
                 {
                     log.Info("Downloading update from " + item);
+
+                    string downloadID = Guid.NewGuid().ToString();
+                    
                     DownloadInfo downloadinfo = new DownloadInfo();
                     downloadinfo.Download(item, dlFolder);
                     downloadinfo.Show();
                     downloadinfo.KBNUMBER = kbnumber;
-                    downloadinfo.FormClosed += downloadinfo_FormClosed;
-
                 } catch(Exception ex)
                 {
                     log.Error(ex.ToString());
@@ -183,11 +189,10 @@ namespace SPUpdater
            
         }
 
-        void downloadinfo_FormClosed(object sender, FormClosedEventArgs e)
+        void UpdateDownloadList(string KBNumber, string guid, UpdateStatus status)
         {
-            throw new NotImplementedException();
+            
         }
-
 
         public void InstallUpdate(SPUpdate update)
         {

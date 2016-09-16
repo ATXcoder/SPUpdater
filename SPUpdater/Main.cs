@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -20,6 +21,8 @@ namespace SPUpdater
 
         DataTable dt;
         DataView dv;
+
+        DatabaseHelper db;
 
         public Main()
         {
@@ -39,6 +42,7 @@ namespace SPUpdater
                      "# SharePoint 2013 Updater              #" + System.Environment.NewLine +
                      "# By: Thomas Sloan                     #" + System.Environment.NewLine +
                      "########################################" + System.Environment.NewLine);
+            db = new DatabaseHelper();
             PowerShell ps = new PowerShell();
             ps.UpdateExecutionPolicy(Microsoft.PowerShell.ExecutionPolicy.Unrestricted);
             ps.GetPowershellVersion();

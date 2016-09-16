@@ -17,6 +17,7 @@ namespace SPUpdater
     {
         // Configure logger
         ILog log = LogManager.GetLogger("Download_Info");
+        string FileName = "";
 
 
         public string KBNUMBER { get; set; }
@@ -42,7 +43,7 @@ namespace SPUpdater
                 Regex regex = new Regex(@"([^\/]+)\/?$");
                 Match match = regex.Match(url);
 
-                LBL_FileName.Text = match.Value;
+                FileName = match.Value;
                 wb.DownloadFileAsync(new Uri(url), downloadPath + "/" + match.Value);
             }
             catch (Exception ex)
@@ -54,7 +55,7 @@ namespace SPUpdater
         private void wb_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             progressBar1.Value = e.ProgressPercentage;
-            label2.Text = "(" + e.ProgressPercentage.ToString() + ")";
+            LBL_FileName.Text = FileName + "(" + e.ProgressPercentage.ToString() + ")";
         }
 
         private void wb_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
